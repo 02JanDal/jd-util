@@ -132,7 +132,7 @@ static bool compareCommands(const Command &a, const Command &b)
 {
 	return a.name() < b.name();
 }
-QString formatPositionalArgument(const PositionalArgument &arg)
+static QString formatPositionalArgument(const PositionalArgument &arg)
 {
 	QString result;
 	if (arg.isOptional()) {
@@ -148,7 +148,7 @@ QString formatPositionalArgument(const PositionalArgument &arg)
 	}
 	return result;
 }
-QVector<QString> formatPositionalArguments(const QVector<PositionalArgument> &args)
+static QVector<QString> formatPositionalArguments(const QVector<PositionalArgument> &args)
 {
 	return Functional::map(args, &formatPositionalArgument);
 }

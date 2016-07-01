@@ -109,6 +109,7 @@ static void setStdinEcho(const bool enable)
 
 	QT_WARNING_PUSH
 	QT_WARNING_DISABLE_GCC("-Wsign-conversion")
+	QT_WARNING_DISABLE_CLANG("-Wsign-conversion")
 	if (!enable) {
 		tty.c_lflag &= ~ECHO;
 	} else {
@@ -250,7 +251,7 @@ int currentWidth()
 
 QString wrap(const QString &text, const int maxWidth, const int indent)
 {
-	static QRegularExpression breakExpression("[^a-zA-Z]");
+	static const QRegularExpression breakExpression("[^a-zA-Z]");
 
 	Q_ASSERT(maxWidth > indent);
 	const int realWidth = maxWidth - indent;

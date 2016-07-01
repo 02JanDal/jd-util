@@ -1,0 +1,11 @@
+if(JDUTIL_TESTHELPERS)
+	return()
+endif()
+set(JDUTIL_TESTHELPERS 1)
+
+function(add_unit_test name)
+	add_executable(tst_${name} tst_${name}.cpp)
+	set_source_files_properties(tst_${name}.cpp PROPERTIES COMPILE_FLAGS "-Wno-missing-prototypes")
+	target_link_libraries(tst_${name} jd-util)
+	add_test(NAME ${name} COMMAND tst_${name})
+endfunction()

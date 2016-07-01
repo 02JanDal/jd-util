@@ -10,3 +10,11 @@ macro(prepend_to_list variable str)
 	endforeach()
 	set(${variable} ${out})
 endmacro()
+
+macro(add_ui_files variable basename)
+	set(${variable} ${${variable}}
+		${basename}.h
+		${basename}.cpp
+		${basename}.ui
+	)
+endmacro()
