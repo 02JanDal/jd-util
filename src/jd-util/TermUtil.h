@@ -24,8 +24,8 @@ inline std::ostream &operator<<(std::ostream &str, const QString &string)
 	return str << string.toLocal8Bit().constData();
 }
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Term {
 
 enum Color

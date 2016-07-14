@@ -30,8 +30,8 @@ QT_BEGIN_NAMESPACE
 class QCoreApplication;
 QT_END_NAMESPACE
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace CommandLine {
 
 class Result;

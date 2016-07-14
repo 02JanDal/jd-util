@@ -21,8 +21,8 @@
 #include "ContainerTraits.h"
 #include "FunctionTraits.h"
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Functional {
 
 template <typename Container, typename Func>

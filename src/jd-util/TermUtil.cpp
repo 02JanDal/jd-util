@@ -36,8 +36,8 @@
 # warning Windows support has not yet been implemented. No colors will be shown.
 #endif
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 using Functional::collection;
 namespace Term {
 namespace detail {
@@ -93,12 +93,12 @@ static QString getBGColorCode(const Color color)
 static QChar getMoveTypeCode(const MoveType type)
 {
 	switch (type) {
-	case Ralph::Common::Term::Up: return 'A';
-	case Ralph::Common::Term::Down: return 'B';
-	case Ralph::Common::Term::Left: return 'D';
-	case Ralph::Common::Term::Right: return 'C';
-	case Ralph::Common::Term::LineDown: return 'E';
-	case Ralph::Common::Term::LineUp: return 'F';
+	case JD::Util::Term::Up: return 'A';
+	case JD::Util::Term::Down: return 'B';
+	case JD::Util::Term::Left: return 'D';
+	case JD::Util::Term::Right: return 'C';
+	case JD::Util::Term::LineDown: return 'E';
+	case JD::Util::Term::LineUp: return 'F';
 	}
 }
 // http://stackoverflow.com/a/1455007/953222

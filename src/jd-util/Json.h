@@ -76,6 +76,7 @@ template <> QJsonValue toJson<QByteArray>(const QByteArray &data);
 template <> QJsonValue toJson<QDateTime>(const QDateTime &datetime);
 template <> QJsonValue toJson<QDir>(const QDir &dir);
 template <> QJsonValue toJson<QUuid>(const QUuid &uuid);
+template <> QJsonValue toJson<QDate>(const QDate &date);
 template <> QJsonValue toJson<QVariant>(const QVariant &variant);
 
 template<typename T>
@@ -108,6 +109,8 @@ template <> QJsonArray ensureIsType<QJsonArray>(const QJsonValue &value, const R
 template <> QJsonValue ensureIsType<QJsonValue>(const QJsonValue &value, const Requirement, const QString &what);
 template <> QByteArray ensureIsType<QByteArray>(const QJsonValue &value, const Requirement, const QString &what);
 template <> QDateTime ensureIsType<QDateTime>(const QJsonValue &value, const Requirement, const QString &what);
+template <> QDate ensureIsType<QDate>(const QJsonValue &value, const Requirement, const QString &what);
+template <> QTime ensureIsType<QTime>(const QJsonValue &value, const Requirement, const QString &what);
 template <> QVariant ensureIsType<QVariant>(const QJsonValue &value, const Requirement, const QString &what);
 template <> QString ensureIsType<QString>(const QJsonValue &value, const Requirement, const QString &what);
 template <> QUuid ensureIsType<QUuid>(const QJsonValue &value, const Requirement, const QString &what);
@@ -221,7 +224,7 @@ QHash<QString, T> ensureIsHashOf(const QJsonValue &value, const QHash<QString, T
 	return ensureIsHashOf<T>(value, Required, what);
 }
 template <typename T>
-QHash<QString, T> ensureIsHashOf(const QJsonObject &parent, const QString &key, const Requirement = Required, const QString &what = "__placeholder")
+QHash<QString, T> ensureIsHashOf(const QJsonObject &parent, const QString &key, const Requirement = Required, const QString &what = "__placeholder__")
 {
 	const QString localWhat = QString(what).replace("__placeholder__", '\'' + key + '\'');
 	if (!parent.contains(key)) {
@@ -246,7 +249,7 @@ QHash<QString, T> ensureIsHashOf(const QJsonObject &parent, const QString &key, 
 { return ensureIsType<TYPE>(value, default_, what); } \
 	inline TYPE ensure##NAME(const QJsonObject &parent, const QString &key, const Requirement requirement = Required, const QString &what = "__placeholder__") \
 { return ensureIsType<TYPE>(parent, key, requirement, what); } \
-	inline TYPE ensure##NAME(const QJsonObject &parent, const QString &key, const TYPE default_, const QString &what = "__placeholder") \
+	inline TYPE ensure##NAME(const QJsonObject &parent, const QString &key, const TYPE default_, const QString &what = "__placeholder__") \
 { return ensureIsType<TYPE>(parent, key, default_, what); }
 
 JSON_HELPERFUNCTIONS(Array, QJsonArray)
@@ -256,6 +259,8 @@ JSON_HELPERFUNCTIONS(Boolean, bool)
 JSON_HELPERFUNCTIONS(Double, double)
 JSON_HELPERFUNCTIONS(Integer, int)
 JSON_HELPERFUNCTIONS(DateTime, QDateTime)
+JSON_HELPERFUNCTIONS(Date, QDate)
+JSON_HELPERFUNCTIONS(Time, QTime)
 JSON_HELPERFUNCTIONS(Url, QUrl)
 JSON_HELPERFUNCTIONS(ByteArray, QByteArray)
 JSON_HELPERFUNCTIONS(Dir, QDir)

@@ -22,8 +22,8 @@
 #include "FunctionTraits.h"
 #include "Eval.h"
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Functional {
 
 template <typename OutputContainer, typename InputContainer, typename Func>

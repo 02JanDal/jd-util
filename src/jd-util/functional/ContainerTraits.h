@@ -16,12 +16,13 @@
 #pragma once
 
 #include <iterator>
+#include <QStringList>
 
 #include "Base.h"
 #include "FunctionTraits.h"
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Functional {
 
 namespace ContainerTraitsDetails {
@@ -156,6 +157,9 @@ template <typename Cont>
 class ContainerTraits<Cont&> : public ContainerTraits<Cont> {};
 template <typename Cont>
 class ContainerTraits<Cont&&> : public ContainerTraits<Cont> {};
+
+template <>
+class ContainerTraits<QStringList> : public ContainerTraits<QList<QString>> {};
 
 }
 }

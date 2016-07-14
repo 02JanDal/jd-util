@@ -17,8 +17,8 @@
 
 #include "Base.h"
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Functional {
 
 constexpr bool IsNull(const void *ptr)

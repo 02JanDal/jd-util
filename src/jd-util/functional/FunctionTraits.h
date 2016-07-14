@@ -17,8 +17,8 @@
 
 #include <tuple>
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Functional {
 
 // https://functionalcpp.wordpress.com/2013/08/05/function-traits/

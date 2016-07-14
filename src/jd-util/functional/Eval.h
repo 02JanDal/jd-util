@@ -18,8 +18,8 @@
 #include "Base.h"
 #include "FunctionTraits.h"
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Functional {
 
 // functions, functors, lambdas, etc.

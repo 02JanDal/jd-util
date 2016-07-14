@@ -19,8 +19,8 @@
 
 // TODO replace by std::optional once it's been released
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 
 template <typename T>
 class Optional

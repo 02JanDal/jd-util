@@ -24,7 +24,7 @@
 #include <cassert>
 #include <iostream>
 
-using namespace Ralph::Common::Functional;
+using namespace JD::Util::Functional;
 
 template <typename A, typename B>
 std::ostream &operator<<(std::ostream &str, const std::pair<A, B> &pair)
@@ -186,6 +186,7 @@ void test_Collection()
 	std::vector<int> vector = {1, 2, 3};
 
 	assert(collection(vector).map([](int i) { return i * 2; }).filter([](int i) { return i < 6; }).type<std::set<int>>().get() == std::set<int>({2, 4}));
+	assert(collection(vector).sort(std::greater<int>()).get() == std::vector<int>({3, 2, 1}));
 }
 
 int main()

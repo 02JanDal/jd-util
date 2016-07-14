@@ -15,7 +15,18 @@
 
 #include "Exception.h"
 
-Exception::Exception(const QString &message) : std::exception(), m_message(message) {}
+#include <QDebug>
+
+#include "Backtrace.h"
+
+Exception::Exception(const QString &message)
+	: std::exception(), m_message(message)
+{
+#ifdef DEBUG_BUILD
+	qDebug() << "Exception" << m_message << "in:";
+	JD::Util::dumpBacktrace(1, 5);
+#endif
+}
 
 Exception::Exception(const Exception &other)
 	: std::exception(), m_message(other.cause())

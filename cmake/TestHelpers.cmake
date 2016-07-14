@@ -1,11 +1,15 @@
 if(JDUTIL_TESTHELPERS)
 	return()
 endif()
-set(JDUTIL_TESTHELPERS 1)
+set(JDUTIL_TESTHELPERS 1 PARENT_SCOPE)
 
 function(add_unit_test name)
-	add_executable(tst_${name} tst_${name}.cpp)
+	if(NOT DEFINED JDUTIL_TEST_DIR)
+		set(JDUTIL_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+	endif()
+
+	add_executable(tst_${name} ${JDUTIL_TEST_DIR}/tst_${name}.cpp)
 	set_source_files_properties(tst_${name}.cpp PROPERTIES COMPILE_FLAGS "-Wno-missing-prototypes")
-	target_link_libraries(tst_${name} jd-util)
+	target_link_libraries(tst_${name} catch jd-util ${JDUTIL_TEST_LIBS})
 	add_test(NAME ${name} COMMAND tst_${name})
 endfunction()

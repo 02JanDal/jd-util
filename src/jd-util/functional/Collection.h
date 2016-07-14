@@ -21,11 +21,12 @@
 #include "Map.h"
 #include "Filter.h"
 #include "Each.h"
+#include "Sort.h"
 #include "Tap.h"
 #include "Functions.h"
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Functional {
 namespace detail {
 template <typename T>
@@ -62,6 +63,10 @@ public:
 	template <typename Func>
 	inline void each(Func &&func) const { Functional::each(m_collection, std::forward<Func>(func)); }
 
+	template <typename Func>
+	inline auto sort(Func &&func) const { return CollectionImpl<Cont>(Functional::sort(m_collection, std::forward<Func>(func))); }
+	inline auto sort() const { return CollectionImpl<Cont>(Functional::sort(m_collection)); }
+
 	template <typename Func, typename FuncTraits = FunctionTraits<Func>, typename T = typename FuncTraits::ReturnType>
 	inline T reduce(Func &&func) const
 	{
@@ -72,10 +77,33 @@ public:
 		return std::accumulate(std::begin(m_collection), std::end(m_collection), detail::defaultInitialValue<T>(typename std::is_integral<T>::type{}), std::forward<Func>(func));
 	}
 
+	inline auto unique() const
+	{
+		Type tmp;
+		return filter([&tmp](const TOne &v)
+		{
+			const bool found = std::find(std::begin(tmp), std::end(tmp), v) != std::end(tmp);
+			if (found) {
+				return false;
+			} else {
+				Traits::add_element(tmp, v);
+				return true;
+			}
+		});
+	}
+
 	template <typename NewCont>
 	inline const CollectionImpl<NewCont> type() const
 	{
 		return CollectionImpl<NewCont>(Functional::map2<NewCont>(m_collection, [](const typename Traits::InsertType &item) { return item; }));
+	}
+	template <typename NewCont>
+	inline NewCont to() const
+	{
+		NewCont out;
+		out.reserve(m_collection.size());
+		std::copy(std::begin(m_collection), std::end(m_collection), std::begin(out));
+		return out;
 	}
 
 	inline auto mapSize() const { return map(&TOne::size); }

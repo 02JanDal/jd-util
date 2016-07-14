@@ -24,8 +24,8 @@
 
 #include "TermUtil.h"
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace CommandLine {
 
 class CommandLineException : public Exception

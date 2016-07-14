@@ -11,10 +11,49 @@ macro(prepend_to_list variable str)
 	set(${variable} ${out})
 endmacro()
 
-macro(add_ui_files variable basename)
-	set(${variable} ${${variable}}
-		${basename}.h
-		${basename}.cpp
-		${basename}.ui
-	)
+macro(add_ui_files variable)
+	foreach(basename ${ARGN})
+		set(${variable} ${${variable}}
+			${basename}.h
+			${basename}.cpp
+			${basename}.ui
+		)
+	endforeach()
 endmacro()
+
+macro(add_qrc_files variable)
+	qt5_add_resources(_qrc_out ${ARGN})
+	foreach(qrcfile ${_qrc_out})
+		set_source_files_properties(${qrcfile} PROPERTIES COMPILE_FLAGS -Wno-global-constructors)
+	endforeach()
+	set(${variable} ${${variable}} ${_qrc_out})
+endmacro()
+
+if(APPLE)
+	set(JDUTIL_OS_BUNDLE MACOSX_BUNDLE)
+elseif(WIN32)
+	set(JDUTIL_OS_BUNDLE WIN32)
+endif()
+
+set(_helpers_path ${CMAKE_CURRENT_LIST_DIR})
+function(setup_app variable copyright identifier iconfilebase)
+	if(APPLE)
+		set(_icon_file ${iconfilebase}.icns)
+		set_source_files_properties(${_icon_file} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+		set(MACOSX_BUNDLE_BUNDLE_NAME ${PROJECT_NAME})
+		set(MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION})
+		set(MACOSX_BUNDLE_LONG_VERSION_STRING ${PROJECT_VERSION})
+		set(MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
+		set(MACOSX_BUNDLE_COPYRIGHT ${copyright})
+		set(MACOSX_BUNDLE_GUI_IDENTIFIER ${identifier})
+		set(MACOSX_BUNDLE_ICON_FILE ${_icon_file})
+		list(APPEND ${variable} ${_icon_file})
+	elseif(WIN32)
+		set(_icon_file ${iconfilebase}.ico)
+		configure_file("${_helpers_path}/data/windows_metafile.rc.in" ${CMAKE_CURRENT_BINARY_DIR}/"windows.rc")
+		set(CMAKE_RC_COMPILER_INIT windres)
+		enable_language(RC)
+		set(CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> <FLAGS> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>")
+		list(APPEND ${variable} ${CMAKE_CURRENT_BINARY_DIR}/"windows.rc")
+	endif()
+endfunction()

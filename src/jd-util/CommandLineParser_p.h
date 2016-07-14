@@ -20,8 +20,8 @@
 
 #include "Functional.h"
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace CommandLine {
 class Result;
 class Option;

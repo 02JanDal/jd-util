@@ -17,8 +17,8 @@
 
 #include <functional>
 
-namespace Ralph {
-namespace Common {
+namespace JD {
+namespace Util {
 namespace Functional {
 template <typename...> using void_t = void;
 
@@ -32,7 +32,7 @@ template <typename...> using void_t = void;
 	{																												\
 		template <typename T, typename... A>																		\
 		using HasMemberFunctionHelper_##name =																		\
-					::Ralph::Common::Functional::void_t<decltype(std::declval<T>().member(std::declval<A>()...))>;	\
+					::JD::Util::Functional::void_t<decltype(std::declval<T>().member(std::declval<A>()...))>;	\
 		template <typename C> static std::true_type test(HasMemberFunctionHelper_##name<C, Args...>*);				\
 		template <typename> static std::false_type test(...);														\
 	public:																											\
@@ -43,7 +43,7 @@ template <typename...> using void_t = void;
 	template <typename Class>																						\
 	class HasMember_##name##_Impl																					\
 	{																												\
-		template <typename C> static std::true_type test(::Ralph::Common::Functional::void_t<decltype(&C::member)>*);\
+		template <typename C> static std::true_type test(::JD::Util::Functional::void_t<decltype(&C::member)>*);\
 		template <typename> static std::false_type test(...);														\
 	public:																											\
 		using result = decltype(test<Class>(nullptr));																\
