@@ -42,6 +42,8 @@ public:
 	void loadNow();
 
 private:
+	Q_DISABLE_COPY(BaseConfigObject)
+
 	QTimer *m_saveTimer;
 	QString m_filename;
 	QMetaObject::Connection m_appQuitConnection;

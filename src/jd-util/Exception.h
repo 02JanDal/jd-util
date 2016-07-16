@@ -23,7 +23,7 @@
 class Exception : public std::exception
 {
 public:
-	Exception(const QString &message);
+	explicit Exception(const QString &message);
 	Exception(const Exception &other);
 	virtual ~Exception() noexcept;
 	const char *what() const noexcept;
