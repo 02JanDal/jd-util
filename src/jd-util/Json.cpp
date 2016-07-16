@@ -113,6 +113,11 @@ QJsonValue Json::toJson<QDate>(const QDate &date)
 {
 	return QJsonValue(date.toString(Qt::ISODate));
 }
+template <>
+QJsonValue Json::toJson<QTime>(const QTime &time)
+{
+	return QJsonValue(time.toString(Qt::ISODate));
+}
 template<>
 QJsonValue Json::toJson<QDir>(const QDir &dir)
 {

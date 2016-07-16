@@ -164,6 +164,8 @@ public:
 	inline const Type get() const { return m_collection; }
 
 	inline operator Type() const { return m_collection; }
+
+	inline auto size() const { return m_collection.size(); }
 };
 
 template <typename Cont>

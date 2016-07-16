@@ -74,9 +74,10 @@ template <typename T> QJsonValue toJson(const T &t)
 template <> QJsonValue toJson<QUrl>(const QUrl &url);
 template <> QJsonValue toJson<QByteArray>(const QByteArray &data);
 template <> QJsonValue toJson<QDateTime>(const QDateTime &datetime);
+template <> QJsonValue toJson<QDate>(const QDate &date);
+template <> QJsonValue toJson<QTime>(const QTime &time);
 template <> QJsonValue toJson<QDir>(const QDir &dir);
 template <> QJsonValue toJson<QUuid>(const QUuid &uuid);
-template <> QJsonValue toJson<QDate>(const QDate &date);
 template <> QJsonValue toJson<QVariant>(const QVariant &variant);
 
 template<typename T>
