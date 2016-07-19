@@ -78,9 +78,9 @@ QT_WARNING_DISABLE_CLANG("-Wvla-extension")
 	}
 
 	free(symbols);
+QT_WARNING_POP
 
 	return out;
-QT_WARNING_POP
 #else
 	return QVector<QString>();
 #endif

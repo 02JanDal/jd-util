@@ -15,6 +15,10 @@
 
 #pragma once
 
+#include <QObject>
+
+namespace JD {
+namespace Util {
 namespace detail
 {
 class RangeIterator
@@ -46,4 +50,29 @@ inline detail::RangeContainer range(const int start, const int end)
 inline detail::RangeContainer range(const int end)
 {
 	return detail::RangeContainer(0, end);
+}
+
+template <typename Container>
+void mergeAssociative(Container &to, const Container &from)
+{
+	for (auto it = from.cbegin(); it != from.cend(); ++it) {
+		to[it.key()] = it.value();
+	}
+}
+template <typename Container>
+Container mergeAssociative(const Container &to, const Container &from)
+{
+	Container out = to;
+	mergeAssociative<Container>(out, from);
+	return out;
+}
+
+template <typename Object, typename Getter, typename Signal, typename Func>
+void applyProperty(Object *obj, Getter getter, Signal signal, QObject *receiveContext, Func func)
+{
+	func((obj->*getter)());
+	QObject::connect(obj, signal, receiveContext, func);
+}
+
+}
 }

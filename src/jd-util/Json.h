@@ -255,6 +255,7 @@ QHash<QString, T> ensureIsHashOf(const QJsonObject &parent, const QString &key, 
 
 JSON_HELPERFUNCTIONS(Array, QJsonArray)
 JSON_HELPERFUNCTIONS(Object, QJsonObject)
+JSON_HELPERFUNCTIONS(Value, QJsonValue)
 JSON_HELPERFUNCTIONS(String, QString)
 JSON_HELPERFUNCTIONS(Boolean, bool)
 JSON_HELPERFUNCTIONS(Double, double)
