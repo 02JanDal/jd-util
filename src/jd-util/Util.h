@@ -17,6 +17,9 @@
 
 #include <QObject>
 
+#include "functional/FunctionTraits.h"
+#include "functional/Base.h"
+
 namespace JD {
 namespace Util {
 namespace detail
@@ -72,6 +75,29 @@ void applyProperty(Object *obj, Getter getter, Signal signal, QObject *receiveCo
 {
 	func((obj->*getter)());
 	QObject::connect(obj, signal, receiveContext, func);
+}
+
+namespace detail {
+QString regexReplaceImplString(const QString &string, const QRegularExpression &regex, const std::function<QString(QString)> &func);
+QString regexReplaceImplRegex(const QString &string, const QRegularExpression &regex, const std::function<QString(QRegularExpressionMatch)> &func);
+
+template <typename Func>
+constexpr bool IsFunctionTakingRegularExpressionMatch =
+		std::is_same<typename Functional::Clean<typename Functional::FunctionTraits<Func>::template Argument<0>::Type>, QRegularExpressionMatch>::value;
+}
+
+QString regexReplace(const QString &string, const QRegularExpression &regex, const QString &replacement);
+template <typename Func>
+QString regexReplace(const QString &string, const QRegularExpression &regex, Func &&func,
+					 std::enable_if_t<detail::IsFunctionTakingRegularExpressionMatch<Func>>* = nullptr)
+{
+	return detail::regexReplaceImplRegex(string, regex, [func](const QRegularExpressionMatch &str) { return func(str); });
+}
+template <typename Func>
+QString regexReplace(const QString &string, const QRegularExpression &regex, Func &&func,
+					 std::enable_if_t<!detail::IsFunctionTakingRegularExpressionMatch<Func>>* = nullptr)
+{
+	return detail::regexReplaceImplString(string, regex, [func](const QString &str) { return func(str); });
 }
 
 }

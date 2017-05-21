@@ -22,6 +22,9 @@ namespace Util {
 namespace Functional {
 template <typename...> using void_t = void;
 
+template <typename Type>
+using Clean = std::remove_cv_t<std::remove_reference_t<Type>>;
+
 #define DEFINE_HAS_MEMBER_HELPER(name, member)			\
 	template <typename T, typename... A>		\
 	using HasMemberFunctionHelper_##name = void_t<decltype(std::declval<T>().member(std::declval<A>()...))>

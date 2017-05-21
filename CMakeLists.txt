@@ -13,6 +13,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE)
 find_package(Qt5 REQUIRED COMPONENTS Core)
 find_package(Git REQUIRED)
 find_package(Catch REQUIRED)
+find_package(Nonius REQUIRED)
 
 include(Helpers)
 
@@ -37,6 +38,8 @@ set(SRC
 	Logging.cpp
 	Introspection.h
 	Introspection.cpp
+	Inflector.h
+	Inflector.cpp
 
 	CommandLineParser.h
 	CommandLineParser_p.h

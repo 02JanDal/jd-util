@@ -11,6 +11,9 @@ if(NOT TARGET catch_dl)
 		LOG_DOWNLOAD ON
 		)
 endif()
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/catch/src/catch_dl/single_include)
+
 add_library(catch INTERFACE IMPORTED)
 set_target_properties(catch PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${CMAKE_BINARY_DIR}/catch/src/catch_dl/single_include)
 add_dependencies(catch catch_dl)

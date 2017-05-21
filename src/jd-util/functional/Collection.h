@@ -144,6 +144,27 @@ public:
 		return reduce(&Add<TOne>);
 	}
 
+	template <typename Func>
+	inline bool any(Func &&func)
+	{
+		for (const auto &&val : m_collection) {
+			if (func(val)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	template <typename Func>
+	inline bool all(Func &&func)
+	{
+		for (const auto &&val : m_collection) {
+			if (!func(val)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	template <typename Glue>
 	inline TOne join(const Glue &glue) const
 	{

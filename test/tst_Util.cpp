@@ -1,5 +1,6 @@
 #include "jd-util/Util.h"
 
+#include <QRegularExpression>
 #include <vector>
 
 #define CATCH_CONFIG_MAIN
@@ -13,4 +14,10 @@ TEST_CASE("Range works") {
 		values.push_back(i);
 	}
 	REQUIRE(values == std::vector<int>({0, 1, 2, 3, 4}));
+}
+
+TEST_CASE("regexReplace") {
+	REQUIRE(regexReplace("abcdef", QRegularExpression("[ace]"), [](const QString &str) { return str.toUpper(); }) == "AbCdEf");
+	REQUIRE(regexReplace("abcdef", QRegularExpression("[ace]"), [](const QString &str) { return str + str; }) == "aabccdeef");
+	REQUIRE(regexReplace("abcdef", QRegularExpression("[ace]"), [](const QString &str) { return ""; }) == "bdf");
 }

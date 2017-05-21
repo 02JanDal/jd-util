@@ -14,3 +14,39 @@
  */
 
 #include "Util.h"
+
+#include <QRegularExpression>
+#include <QRegularExpressionMatchIterator>
+
+namespace JD {
+namespace Util {
+
+QString regexReplace(const QString &string, const QRegularExpression &regex, const QString &replacement)
+{
+	return QString(string).replace(regex, replacement);
+}
+
+QString detail::regexReplaceImplString(const QString &string, const QRegularExpression &regex,
+									   const std::function<QString(QString)> &func)
+{
+	return regexReplaceImplRegex(string, regex, [func](const QRegularExpressionMatch &match) { return func(match.captured()); });
+}
+QString detail::regexReplaceImplRegex(const QString &string, const QRegularExpression &regex,
+								 const std::function<QString(QRegularExpressionMatch)> &func)
+{
+	QString result = string;
+
+	int offset = 0;
+	QRegularExpressionMatchIterator iterator = regex.globalMatch(result);
+	while (iterator.hasNext()) {
+		const QRegularExpressionMatch match = iterator.next();
+		const QString replacement = func(match);
+		result = result.replace(match.capturedStart() + offset, match.capturedLength(), replacement);
+		offset += (replacement.length() - match.capturedLength());
+	}
+
+	return result;
+}
+
+}
+}
