@@ -29,6 +29,10 @@ macro(add_qrc_files variable)
 	set(${variable} ${${variable}} ${_qrc_out})
 endmacro()
 
+macro(clean_qt target)
+	target_compile_definitions(${target} PRIVATE QT_NO_CAST_FROM_ASCII=1 QT_NO_CAST_TO_ASCII=1)
+endmacro()
+
 if(APPLE)
 	set(JDUTIL_OS_BUNDLE MACOSX_BUNDLE)
 elseif(WIN32)

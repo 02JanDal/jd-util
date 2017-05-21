@@ -68,12 +68,12 @@ QT_WARNING_DISABLE_CLANG("-Wvla-extension")
 			char *demangled = abi::__cxa_demangle(beginName, functionName, &functionNameSize, &status);
 
 			if (status == 0) {
-				out.append(QString(demangled) + '+' + QString(beginOffset));
+				out.append(QString::fromLocal8Bit(demangled) + QLatin1Char('+') + QString::fromLocal8Bit(beginOffset));
 			} else {
-				out.append(QString(beginName) + "()+" + QString(beginOffset));
+				out.append(QString::fromLocal8Bit(beginName) + QStringLiteral("()+") + QString::fromLocal8Bit(beginOffset));
 			}
 		} else {
-			out.append(symbols[i]);
+			out.append(QString::fromLocal8Bit(symbols[i]));
 		}
 	}
 

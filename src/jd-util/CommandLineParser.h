@@ -141,7 +141,7 @@ public:
 
 	QString name() const { return m_name; }
 	QString description() const { return m_description; }
-	QString summary() const { return m_description.mid(0, m_description.indexOf('\n')); }
+	QString summary() const { return m_description.mid(0, m_description.indexOf(QLatin1Char('\n'))); }
 
 	QVector<Option> options() const { return m_options; }
 	Command &setOptions(const QVector<Option> &options) { m_options = options; return *this; }
@@ -156,7 +156,7 @@ public:
 	Command &add(const Command &subcommand) { m_subcommands.insert(subcommand.name(), subcommand); return *this; }
 
 	QHash<QString, QVector<QString>> commandAliases() const { return m_commandAliases; }
-	Command &addCommandAlias(const QString &alias, const QString &commandPath) { return addCommandAlias(alias, commandPath.split(' ').toVector()); }
+	Command &addCommandAlias(const QString &alias, const QString &commandPath) { return addCommandAlias(alias, commandPath.split(QLatin1Char(' ')).toVector()); }
 	Command &addCommandAlias(const QString &alias, const QVector<QString> &commandPath) { m_commandAliases.insert(alias, commandPath); return *this; }
 
 	bool isHidden() const { return m_hidden; }

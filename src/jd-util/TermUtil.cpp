@@ -45,60 +45,60 @@ namespace detail {
 static QString getStyleCode(const Style style)
 {
 	switch (style) {
-	case Term::Bold: return "\033[1m";
-	case Term::Dark: return "\033[2m";
-	case Term::Underline: return "\033[4m";
-	case Term::Blink: return "\033[5m";
-	case Term::Reverse: return "\033[7m";
-	case Term::Concealed: return "\033[8m";
+	case Term::Bold: return QStringLiteral("\033[1m");
+	case Term::Dark: return QStringLiteral("\033[2m");
+	case Term::Underline: return QStringLiteral("\033[4m");
+	case Term::Blink: return QStringLiteral("\033[5m");
+	case Term::Reverse: return QStringLiteral("\033[7m");
+	case Term::Concealed: return QStringLiteral("\033[8m");
 	}
 }
 static QString getStyleEndCode(const Style style)
 {
 	switch (style) {
-	case Term::Bold: return "\033[22m";
-	case Term::Dark: return "\033[22m";
-	case Term::Underline: return "\033[24m";
-	case Term::Blink: return "\033[25m";
-	case Term::Reverse: return "\033[27m";
-	case Term::Concealed: return "\033[38m";
+	case Term::Bold: return QStringLiteral("\033[22m");
+	case Term::Dark: return QStringLiteral("\033[22m");
+	case Term::Underline: return QStringLiteral("\033[24m");
+	case Term::Blink: return QStringLiteral("\033[25m");
+	case Term::Reverse: return QStringLiteral("\033[27m");
+	case Term::Concealed: return QStringLiteral("\033[38m");
 	}
 }
 static QString getFGColorCode(const Color color)
 {
 	switch (color) {
-	case Term::Grey: return "\033[30m";
-	case Term::Red: return "\033[31m";
-	case Term::Green: return "\033[32m";
-	case Term::Yellow: return "\033[33m";
-	case Term::Blue: return "\033[34m";
-	case Term::Magenta: return "\033[35m";
-	case Term::Cyan: return "\033[36m";
-	case Term::White: return "\033[37m";
+	case Term::Grey: return QStringLiteral("\033[30m");
+	case Term::Red: return QStringLiteral("\033[31m");
+	case Term::Green: return QStringLiteral("\033[32m");
+	case Term::Yellow: return QStringLiteral("\033[33m");
+	case Term::Blue: return QStringLiteral("\033[34m");
+	case Term::Magenta: return QStringLiteral("\033[35m");
+	case Term::Cyan: return QStringLiteral("\033[36m");
+	case Term::White: return QStringLiteral("\033[37m");
 	}
 }
 static QString getBGColorCode(const Color color)
 {
 	switch (color) {
-	case Term::Grey: return "\033[40m";
-	case Term::Red: return "\033[41m";
-	case Term::Green: return "\033[42m";
-	case Term::Yellow: return "\033[43m";
-	case Term::Blue: return "\033[44m";
-	case Term::Magenta: return "\033[45m";
-	case Term::Cyan: return "\033[46m";
-	case Term::White: return "\033[47m";
+	case Term::Grey: return QStringLiteral("\033[40m");
+	case Term::Red: return QStringLiteral("\033[41m");
+	case Term::Green: return QStringLiteral("\033[42m");
+	case Term::Yellow: return QStringLiteral("\033[43m");
+	case Term::Blue: return QStringLiteral("\033[44m");
+	case Term::Magenta: return QStringLiteral("\033[45m");
+	case Term::Cyan: return QStringLiteral("\033[46m");
+	case Term::White: return QStringLiteral("\033[47m");
 	}
 }
 static QChar getMoveTypeCode(const MoveType type)
 {
 	switch (type) {
-	case JD::Util::Term::Up: return 'A';
-	case JD::Util::Term::Down: return 'B';
-	case JD::Util::Term::Left: return 'D';
-	case JD::Util::Term::Right: return 'C';
-	case JD::Util::Term::LineDown: return 'E';
-	case JD::Util::Term::LineUp: return 'F';
+	case JD::Util::Term::Up: return QLatin1Char('A');
+	case JD::Util::Term::Down: return QLatin1Char('B');
+	case JD::Util::Term::Left: return QLatin1Char('D');
+	case JD::Util::Term::Right: return QLatin1Char('C');
+	case JD::Util::Term::LineDown: return QLatin1Char('E');
+	case JD::Util::Term::LineUp: return QLatin1Char('F');
 	}
 }
 // http://stackoverflow.com/a/1455007/953222
@@ -165,7 +165,7 @@ QString fg(const Color color, const QString &in)
 	if (in.isEmpty()) {
 		return detail::getFGColorCode(color);
 	} else {
-		return detail::getFGColorCode(color) + in + "\033[39m";
+		return detail::getFGColorCode(color) + in + QStringLiteral("\033[39m");
 	}
 #endif
 }
@@ -180,7 +180,7 @@ QString bg(const Color color, const QString &in)
 	if (in.isEmpty()) {
 		return detail::getBGColorCode(color);
 	} else {
-		return detail::getBGColorCode(color) + in + "\033[39m";
+		return detail::getBGColorCode(color) + in + QStringLiteral("\033[39m");
 	}
 #endif
 }
@@ -192,7 +192,7 @@ QString reset()
 #ifdef Q_OS_WIN
 	return "";
 #else
-	return "\033[00m";
+	return QStringLiteral("\033[00m");
 #endif
 }
 QString move(const MoveType type, const int n)
@@ -214,7 +214,7 @@ QString save()
 #ifdef Q_OS_WIN
 	return "";
 #else
-	return "\033[s";
+	return QStringLiteral("\033[s");
 #endif
 }
 QString restore()
@@ -225,7 +225,7 @@ QString restore()
 #ifdef Q_OS_WIN
 	return "";
 #else
-	return "\033[u";
+	return QStringLiteral("\033[u");
 #endif
 }
 
@@ -251,7 +251,7 @@ int currentWidth()
 
 QString wrap(const QString &text, const int maxWidth, const int indent)
 {
-	static const QRegularExpression breakExpression("[^a-zA-Z]");
+	static const QRegularExpression breakExpression(QStringLiteral("[^a-zA-Z]"));
 
 	Q_ASSERT(maxWidth > indent);
 	const int realWidth = maxWidth - indent;
@@ -266,10 +266,10 @@ QString wrap(const QString &text, const int maxWidth, const int indent)
 	while (index < text.size()) {
 		QString row = text.mid(index);
 
-		int breakIndex = row.lastIndexOf('\n', realWidth);
+		int breakIndex = row.lastIndexOf(QLatin1Char('\n'), realWidth);
 		bool breakAtSpace = true;
 		if (breakIndex == -1) {
-			breakIndex = row.lastIndexOf(' ', realWidth);
+			breakIndex = row.lastIndexOf(QLatin1Char(' '), realWidth);
 		}
 		if (breakIndex == -1) {
 			breakIndex = row.lastIndexOf(breakExpression, realWidth);
@@ -286,7 +286,7 @@ QString wrap(const QString &text, const int maxWidth, const int indent)
 		index += breakAtSpace ? row.size() + 1 : row.size();
 	}
 
-	return rows.join('\n' + QString(indent, ' '));
+	return rows.join(QLatin1Char('\n') + QString(indent, QLatin1Char(' ')));
 }
 
 static QVector<QVector<QString>> partitionRow(const QVector<QString> &columns, const QVector<int> &columnSizes)
@@ -296,7 +296,7 @@ static QVector<QVector<QString>> partitionRow(const QVector<QString> &columns, c
 	QVector<QVector<QString>> wrapped;
 	for (int i = 0; i < columns.size(); ++i) {
 		// perform wrapping and split at new lines
-		wrapped.append(wrap(columns.at(i), columnSizes.at(i)).split('\n').toVector());
+		wrapped.append(wrap(columns.at(i), columnSizes.at(i)).split(QLatin1Char('\n')).toVector());
 	}
 
 	// how many rows to we have at most in a single column?
@@ -350,13 +350,13 @@ QString table(const QVector<QVector<QString> > &rows, const QVector<int> &column
 			QStringList res;
 			for (int i = 0; i < partitionedRow.size(); ++i) {
 				const int padding = columnSizes.at(i) - partitionedRow.at(i).size();
-				res.append(partitionedRow.at(i) + QString(padding, ' '));
+				res.append(partitionedRow.at(i) + QString(padding, QLatin1Char(' ')));
 			}
-			return res.join(' ');
+			return res.join(QLatin1Char(' '));
 		})
-				.join("\n" + QString(indent, ' '));
+				.join(QLatin1Char('\n') + QString(indent, QLatin1Char(' ')));
 	})
-			.join("\n" + QString(indent, ' '));
+			.join(QLatin1Char('\n') + QString(indent, QLatin1Char(' ')));
 }
 
 QString readPassword()

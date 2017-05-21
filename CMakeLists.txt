@@ -66,6 +66,7 @@ target_include_directories(jd-util PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>
 )
+clean_qt(jd-util)
 
 install(TARGETS jd-util EXPORT jd-util DESTINATION lib)
 install(DIRECTORY src/ DESTINATION include FILES_MATCHING PATTERN "*.h")

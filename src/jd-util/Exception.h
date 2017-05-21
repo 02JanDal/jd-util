@@ -46,5 +46,5 @@ private:
 	QT_WARNING_POP
 #define DECLARE_EXCEPTION(name) DECLARE_EXCEPTION_X(name, QString())
 
-DECLARE_EXCEPTION_X(NotImplemented, "This feature is not yet implemented")
-DECLARE_EXCEPTION_X(NotReachable, "This should not be reachable")
+DECLARE_EXCEPTION_X(NotImplemented, QStringLiteral("This feature is not yet implemented"))
+DECLARE_EXCEPTION_X(NotReachable, QStringLiteral("This should not be reachable"))

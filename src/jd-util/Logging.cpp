@@ -25,8 +25,8 @@ namespace Util {
 
 static QString cleanMessagePath(const QString &path)
 {
-	if (path.contains('/')) {
-		return path.mid(path.lastIndexOf('/') + 1);
+	if (path.contains(QLatin1Char('/'))) {
+		return path.mid(path.lastIndexOf(QLatin1Char('/')) + 1);
 	} else {
 		return path;
 	}
@@ -41,11 +41,11 @@ static void messageHandler(const QtMsgType type, const QMessageLogContext &ctxt,
 {
 	QString msg;
 
-	if (ctxt.category && QString(ctxt.category) != "default") {
-		msg += QLatin1Char('[') + Term::fg(Term::Green, ctxt.category) + QLatin1Char(']');
+	if (ctxt.category && QString::fromLatin1(ctxt.category) != QStringLiteral("default")) {
+		msg += QLatin1Char('[') + Term::fg(Term::Green, QString::fromLatin1(ctxt.category)) + QLatin1Char(']');
 	}
 	if (ctxt.file) {
-		msg += QLatin1Char('[') + cleanMessagePath(ctxt.file) + QLatin1Char(':') + QString::number(ctxt.line) + QLatin1Char(']');
+		msg += QLatin1Char('[') + cleanMessagePath(QString::fromLatin1(ctxt.file)) + QLatin1Char(':') + QString::number(ctxt.line) + QLatin1Char(']');
 	}
 	/*if (ctxt.function) {
 		msg += QLatin1Char('[') + cleanMessageFunction(ctxt.function) + QLatin1Char(']');
@@ -53,13 +53,15 @@ static void messageHandler(const QtMsgType type, const QMessageLogContext &ctxt,
 
 	msg += QLatin1Char(' ') + Term::style(Term::Bold, message);
 
+	msg.prepend(QLatin1Char(']'));
 	switch (type) {
-	case QtInfoMsg:     msg.prepend(QLatin1Char('[') + Term::fg(Term::Cyan,   "INFO"    ) + QLatin1Char(']')); break;
-	case QtDebugMsg:    msg.prepend(QLatin1Char('[') + Term::fg(Term::Blue,   "DEBUG"   ) + QLatin1Char(']')); break;
-	case QtWarningMsg:  msg.prepend(QLatin1Char('[') + Term::fg(Term::Yellow, "WARNING" ) + QLatin1Char(']')); break;
-	case QtCriticalMsg: msg.prepend(QLatin1Char('[') + Term::fg(Term::Red,    "CRITICAL") + QLatin1Char(']')); break;
-	case QtFatalMsg:    msg.prepend(QLatin1Char('[') + Term::fg(Term::Red,    "FATAL"   ) + QLatin1Char(']')); break;
+	case QtInfoMsg:     msg.prepend(Term::fg(Term::Cyan,   QStringLiteral("INFO")    )); break;
+	case QtDebugMsg:    msg.prepend(Term::fg(Term::Blue,   QStringLiteral("DEBUG")   )); break;
+	case QtWarningMsg:  msg.prepend(Term::fg(Term::Yellow, QStringLiteral("WARNING") )); break;
+	case QtCriticalMsg: msg.prepend(Term::fg(Term::Red,    QStringLiteral("CRITICAL"))); break;
+	case QtFatalMsg:    msg.prepend(Term::fg(Term::Red,    QStringLiteral("FATAL")   )); break;
 	}
+	msg.prepend(QLatin1Char('['));
 
 	if (type == QtInfoMsg) {
 		std::cout << msg.toLocal8Bit().constData() << '\n';

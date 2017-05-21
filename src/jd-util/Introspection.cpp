@@ -19,6 +19,8 @@
 
 QString JD::Util::Introspection::detail::extractClass(const char *func)
 {
-	const QString in = func;
-	return in.left(in.lastIndexOf(':')-1).mid(in.lastIndexOf(' ')+1);
+	const QString in = QString::fromLatin1(func);
+	// given an input like "void Namespace::Class::method()" it first gets the part between the last : and first space
+	// TODO: handle : in the parameter list
+	return in.left(in.lastIndexOf(QLatin1Char(':'))-1).mid(in.lastIndexOf(QLatin1Char(' '))+1);
 }
