@@ -16,14 +16,19 @@
 #pragma once
 
 #include <QObject>
+#include <QMetaProperty>
+#include <QDebug>
+#include <functional>
+
+#include "functional/FunctionTraits.h"
+#include "functional/Base.h"
 
 #include "functional/FunctionTraits.h"
 #include "functional/Base.h"
 
 namespace JD {
 namespace Util {
-namespace detail
-{
+namespace detail {
 class RangeIterator
 {
 	int m_value;
@@ -70,11 +75,83 @@ Container mergeAssociative(const Container &to, const Container &from)
 	return out;
 }
 
-template <typename Object, typename Getter, typename Signal, typename Func>
-void applyProperty(Object *obj, Getter getter, Signal signal, QObject *receiveContext, Func func)
+namespace detail {
+template <typename> class PropertyApplier;
+// clazy:excludeall=missing-qobject-macro
+#define PROPERTYAPPLIER(type) \
+class PropertyApplier_##type : public QObject \
+{ \
+	Q_OBJECT \
+	using Function = std::function<void(type)>; \
+	Function m_function; \
+public: \
+	explicit PropertyApplier_##type(Function &&func, QObject *parent = nullptr) : QObject(parent), m_function(std::forward<Function>(func)) {} \
+	Q_INVOKABLE void apply(const type &property) { m_function(property); } \
+	static QMetaMethod applyMethod() { return staticMetaObject.method(staticMetaObject.indexOfMethod("apply(" #type ")")); } \
+}; \
+template <> \
+class PropertyApplier<type> : public PropertyApplier_##type \
+{ \
+public: \
+	using PropertyApplier_##type::PropertyApplier_##type; \
+};
+PROPERTYAPPLIER(QVariant)
+PROPERTYAPPLIER(QString)
+PROPERTYAPPLIER(int)
+PROPERTYAPPLIER(bool)
+#undef PROPERTYAPPLIER
+}
+
+template <typename Object, typename Getter, typename Signal, typename Receiver, typename Func>
+void applyProperty(Object *obj, Getter getter, Signal signal, Receiver *receiverContext, Func func)
 {
-	func((obj->*getter)());
-	QObject::connect(obj, signal, receiveContext, func);
+	JD::Util::Functional::static_if<std::is_member_function_pointer<Func>::value>([&](auto f)
+	{
+		(receiverContext->*f(func))((obj->*getter)());
+		QObject::connect(obj, signal, receiverContext, func);
+	}).else_([&](auto f)
+	{
+		f(func)((obj->*getter)());
+		QObject::connect(obj, signal, receiverContext, f(func));
+	});
+}
+template <typename Receiver, typename Func>
+void applyProperty(QObject *obj, const char *propertyName, Receiver *receiverContext, Func func)
+{
+	using DirtyType = typename Functional::FunctionTraits<Func>::template Argument<0>::Type;
+	using Type = std::remove_cv_t<std::remove_reference_t<DirtyType>>;
+	const QMetaObject *meta = obj->metaObject();
+	const QMetaProperty property = meta->property(meta->indexOfProperty(propertyName));
+	JD::Util::Functional::static_if<std::is_member_function_pointer<Func>::value>([&](auto f)
+	{
+		(receiverContext->*f(func))(property.read(obj).value<Type>());
+		QObject::connect(obj, property.notifySignal(),
+						 new detail::PropertyApplier<Type>([=](const Type &v) { (receiverContext->*f(func))(v); }, receiverContext), detail::PropertyApplier<Type>::applyMethod());
+	}).else_([&](auto f)
+	{
+		f(func)(property.read(obj).value<Type>());
+		QObject::connect(obj,
+						 property.notifySignal(), new detail::PropertyApplier<Type>([=](const Type &v) { f(func)(v); }, receiverContext), detail::PropertyApplier<Type>::applyMethod());
+	});
+}
+
+namespace detail {
+template <typename Container>
+class ReverseContainer
+{
+	const Container m_cont;
+public:
+	explicit ReverseContainer(Container &&cont) : m_cont(std::forward<Container>(cont)) {}
+
+	auto begin() { return m_cont.rbegin(); }
+	auto end() { return m_cont.rend(); }
+};
+}
+
+template <typename Container>
+auto reverse(Container &&container)
+{
+	return detail::ReverseContainer<Container>(std::forward<Container>(container));
 }
 
 namespace detail {
