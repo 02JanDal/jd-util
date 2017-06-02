@@ -86,7 +86,9 @@ install(EXPORT jd-util NAMESPACE jd_ DESTINATION lib/cmake)
 install(DIRECTORY cmake/ DESTINATION lib/cmake/jd-util)
 
 include(CppCheck)
+include(ClangTidy)
 cppcheck_target(jd-util)
+clang_tidy_target(jd-util)
 
 enable_testing()
 add_subdirectory(test)
