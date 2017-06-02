@@ -233,7 +233,7 @@ void Parser::printHelp(const QVector<QString> &commands)
 	QVector<Option> options;
 	QVector<PositionalArgument> positionals;
 	Command command = Command(QString()).add(*this);
-	for (const QString &cmd : chain) {
+	for (const QString &cmd : qAsConst(chain)) {
 		command = command.subcommands().value(cmd);
 		options.append(command.options());
 		positionals.append(command.arguments());
@@ -315,7 +315,7 @@ Result Parser::parse(const QStringList &arguments) const
 			throw UnexpectedArgumentException(QStringLiteral("Didn't expect an argument in ") + (it ? it->peekPrevious() : name), result.commandChain);
 		} else if (!hasValue && option.hasArgument() && option.isArgumentRequired()) {
 			if (it && it->hasNext() && !it->peekNext().startsWith(QLatin1Char('-'))) {
-				result.options[option.names().first()].append(it->next());
+				result.options[option.names().constFirst()].append(it->next());
 				return;
 			} else {
 				throw MissingRequiredArgumentException(QStringLiteral("Missing required argument to -%1%2") % QString(name.size() > 1 ?  QStringLiteral("-") : QStringLiteral("")) % name, result.commandChain);
@@ -324,7 +324,7 @@ Result Parser::parse(const QStringList &arguments) const
 		if (result.options.contains(option.names().first()) && !option.doesAllowMultiple()) {
 			throw RepeatedOptionException(QStringLiteral("Received option -%1%2 multiple times, only once is allowed") % QString(name.size() > 1 ? QStringLiteral("-") : QStringLiteral("")) % name, result.commandChain);
 		}
-		result.options[option.names().first()].append(value);
+		result.options[option.names().constFirst()].append(value);
 	};
 	auto handleArguments = [&result, &haveStartedPositionals, &positionals](const QVector<QString> &args)
 	{

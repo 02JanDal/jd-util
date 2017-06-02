@@ -29,7 +29,6 @@ template <typename Container, typename Func>
 auto sort(const Container &input, Func &&func, std::enable_if_t<FunctionTraits<Func>::arity == 2>* = nullptr)
 {
 	static_assert(std::is_same<typename FunctionTraits<Func>::ReturnType, bool>::value, "error: func needs to return a boolean value");
-	static_assert(ContainerTraits<Container>::arity >= FunctionTraits<Func>::arity, "error: func needs an arity equal to or less than the input container");
 	Container output = input;
 	std::sort(std::begin(output), std::end(output), std::forward<Func>(func));
 	return output;

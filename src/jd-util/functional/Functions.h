@@ -23,8 +23,13 @@ namespace Functional {
 
 constexpr bool IsNull(const void *ptr)
 {
+	return !ptr;
+}
+constexpr bool IsNotNull(const void *ptr)
+{
 	return !!ptr;
 }
+
 template <typename T>
 constexpr T Max(const T &a, const T &b)
 {
