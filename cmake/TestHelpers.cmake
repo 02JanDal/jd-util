@@ -23,6 +23,6 @@ function(add_benchmark name)
 	endif()
 
 	add_executable(ben_${name} ${JDUTIL_TEST_DIR}/ben_${name}.cpp)
-	target_link_libraries(ben_${name} nonius jd-util ${JDUTIL_TEST_LIBS})
+	target_link_libraries(ben_${name} nonius pthread jd-util ${JDUTIL_TEST_LIBS})
 	add_test(NAME ben_${name} COMMAND ben_${name})
 endfunction()

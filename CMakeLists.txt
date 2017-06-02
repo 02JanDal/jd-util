@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5)
 
 project(jd-util)
 
@@ -80,7 +80,19 @@ target_include_directories(jd-util PUBLIC
 )
 clean_qt(jd-util)
 
-install(TARGETS jd-util EXPORT jd-util DESTINATION lib)
+set(GUI_SRC
+	UndoUtil.h
+	UndoUtil.cpp
+)
+prepend_to_list(GUI_SRC src/jd-util-gui/)
+add_library(jd-util-gui ${GUI_SRC})
+target_link_libraries(jd-util-gui Qt5::Core Qt5::Gui Qt5::Widgets jd-util)
+target_include_directories(jd-util-gui PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+	$<INSTALL_INTERFACE:include>
+)
+
+install(TARGETS jd-util jd-util-gui EXPORT jd-util DESTINATION lib)
 install(DIRECTORY src/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 install(EXPORT jd-util NAMESPACE jd_ DESTINATION lib/cmake)
 install(DIRECTORY cmake/ DESTINATION lib/cmake/jd-util)
@@ -89,6 +101,8 @@ include(CppCheck)
 include(ClangTidy)
 cppcheck_target(jd-util)
 clang_tidy_target(jd-util)
+cppcheck_target(jd-util-gui)
+clang_tidy_target(jd-util-gui)
 
 enable_testing()
 add_subdirectory(test)
