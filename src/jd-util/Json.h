@@ -34,6 +34,7 @@ DECLARE_EXCEPTION(Json);
 
 namespace Private {
 DEFINE_HAS_MEMBER(toJson, toJson);
+DEFINE_HAS_MEMBER(fromJson, fromJson);
 }
 
 enum Requirement
@@ -118,6 +119,29 @@ template <> QUuid ensureIsType<QUuid>(const QJsonValue &value, const Requirement
 template <> QDir ensureIsType<QDir>(const QJsonValue &value, const Requirement, const QString &what);
 template <> QUrl ensureIsType<QUrl>(const QJsonValue &value, const Requirement, const QString &what);
 
+namespace detail {
+template <typename T>
+T fromJsonHelper(const QJsonValue &value, const QString &what, std::true_type)
+{
+	T val;
+	val.fromJson(ensureIsType<QJsonArray>(value, Required, what));
+	return val;
+}
+template <typename T>
+T fromJsonHelper(const QJsonValue &value, const QString &what, std::false_type)
+{
+	T val;
+	val.fromJson(ensureIsType<QJsonObject>(value, Required, what));
+	return val;
+}
+}
+
+template <typename T>
+T ensureIsType(const QJsonValue &value, const Requirement, const QString &what)
+{
+	return detail::fromJsonHelper<T>(value, what, Private::HasMemberFunction_fromJson<T, QJsonArray>());
+}
+
 // the following functions are higher level functions, that make use of the above functions for
 // type conversion
 template <typename T>
@@ -158,7 +182,7 @@ QVector<T> ensureIsArrayOf(const QJsonDocument &doc)
 {
 	const QJsonArray array = ensureArray(doc);
 	QVector<T> out;
-	for (const QJsonValue val : array)
+	for (const QJsonValue &val : array)
 	{
 		out.append(ensureIsType<T>(val, Required, "Document"));
 	}
@@ -170,7 +194,7 @@ QVector<T> ensureIsArrayOf(const QJsonValue &value, const Requirement = Required
 {
 	const QJsonArray array = ensureIsType<QJsonArray>(value, Required, what);
 	QVector<T> out;
-	for (const QJsonValue val : array)
+	for (const QJsonValue &val : array)
 	{
 		out.append(ensureIsType<T>(val, Required, what));
 	}

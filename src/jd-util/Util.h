@@ -83,7 +83,7 @@ QString regexReplaceImplRegex(const QString &string, const QRegularExpression &r
 
 template <typename Func>
 constexpr bool IsFunctionTakingRegularExpressionMatch =
-		std::is_same<typename Functional::Clean<typename Functional::FunctionTraits<Func>::template Argument<0>::Type>, QRegularExpressionMatch>::value;
+		std::is_same<typename std::decay_t<typename Functional::FunctionTraits<Func>::template Argument<0>::Type>, QRegularExpressionMatch>::value;
 }
 
 QString regexReplace(const QString &string, const QRegularExpression &regex, const QString &replacement);

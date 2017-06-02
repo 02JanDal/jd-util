@@ -33,7 +33,7 @@ DEFINE_HAS_MEMBER(first, first);
 DEFINE_HAS_MEMBER(second, second);
 
 template <bool Condition, typename T = void>
-using enif_t = std::enable_if_t<Condition, T>;
+using enif_t = typename std::enable_if<Condition, T>;
 
 template <typename Container>
 using InsertionArgumentType = typename std::iterator_traits<typename Container::iterator>::value_type;
@@ -45,20 +45,34 @@ static constexpr bool has_push_front = HasMemberFunction_push_front<Type, Insert
 template <typename Type>
 static constexpr bool has_insert = HasMemberFunction_insert<Type, InsertionArgumentType<Type>>::value;
 
+template <bool A, bool B, bool C>
+struct ArgList {};
+
 template <typename Type>
-static auto InsertionIterator(Type &container, enif_t<has_push_back<Type>>* = nullptr)
+static auto InsertionIteratorImpl(Type &container, ArgList<true, false, false>)
 {
 	return std::back_inserter(container);
 }
 template <typename Type>
-static auto InsertionIterator(Type &container, enif_t<has_push_front<Type> && !has_push_back<Type>>* = nullptr)
+static auto InsertionIteratorImpl(Type &container, ArgList<true, true, false>)
+{
+	return std::back_inserter(container);
+}
+template <typename Type>
+static auto InsertionIteratorImpl(Type &container, ArgList<false, true, false>)
 {
 	return std::front_inserter(container);
 }
 template <typename Type>
-static auto InsertionIterator(Type &container, enif_t<HasMemberFunction_insert<Type, InsertionArgumentType<Type>>::value>* = nullptr)
+static auto InsertionIteratorImpl(Type &container, ArgList<false, false, true>)
 {
 	return std::inserter(container, std::end(container));
+}
+
+template <typename Type>
+static auto InsertionIterator(Type &container)
+{
+	return InsertionIteratorImpl(container, ArgList<has_push_back<Type>, has_push_front<Type>, has_insert<Type>>());
 }
 
 template <template<typename...> class Cont, typename... Args>

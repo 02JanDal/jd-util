@@ -33,7 +33,7 @@ TEST_CASE("Inflector") {
 
 	const std::vector<std::vector<QString>> data = {{"post", "posts"}, {"octopus", "octopi"}, {"sheep", "sheep"}, {"CamelOctopus", "CamelOctopi"}};
 	SECTION("pluralize") {
-		for (const auto elem : data) {
+		for (const auto &elem : data) {
 			REQUIRE(infl.pluralize(elem[0]) == elem[1]);
 			REQUIRE(infl.pluralize(elem[1]) == elem[1]);
 		}
@@ -41,7 +41,7 @@ TEST_CASE("Inflector") {
 	}
 
 	SECTION("singularize") {
-		for (const auto elem : data) {
+		for (const auto &elem : data) {
 			REQUIRE(infl.singularize(elem[0]) == elem[0]);
 			REQUIRE(infl.singularize(elem[1]) == elem[0]);
 		}

@@ -23,7 +23,7 @@ namespace Functional {
 template <typename...> using void_t = void;
 
 template <typename Type>
-using Clean = std::remove_cv_t<std::remove_reference_t<Type>>;
+using Clean = typename std::remove_cv<typename std::remove_reference<Type>>;
 
 #define DEFINE_HAS_MEMBER_HELPER(name, member)			\
 	template <typename T, typename... A>		\
@@ -74,6 +74,17 @@ struct Statement<false>
 	template <typename F> void else_(const F&f) { f(Identity()); }
 };
 }
+
+/* Usage:
+ *
+ * Functional::static_if<...>([this, func](auto f)
+		{
+			m_callback = [func, f](const Result &) { f(func)(); };
+		}).else_([this, func](auto f)
+		{
+			m_callback = f(func);
+		});
+ */
 template <bool Condition, typename F>
 StaticIfDetail::Statement<Condition> static_if(F const &f)
 {
