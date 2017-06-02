@@ -19,6 +19,11 @@ find_package(Catch REQUIRED)
 find_package(Nonius REQUIRED)
 find_package(Clazy REQUIRED)
 
+option(USE_IWYU "Wether to enable include-what-you-use or not" OFF)
+if(USE_IWYU)
+	find_package(IWYU)
+endif()
+
 include(Helpers)
 
 set(SRC
