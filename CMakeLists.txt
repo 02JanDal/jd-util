@@ -50,6 +50,9 @@ set(SRC
 	Inflector.h
 	Inflector.cpp
 
+	MultiLevelModel.h
+	MultiLevelModel.cpp
+
 	CommandLineParser.h
 	CommandLineParser_p.h
 	CommandLineParser.cpp
