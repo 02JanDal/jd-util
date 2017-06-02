@@ -1,7 +1,7 @@
 if(JDUTIL_COVERAGEHELPERS OR TARGET coverage_reset)
 	return()
 endif()
-set(JDUTIL_COVERAGEHELPERS 1 PARENT_SCOPE)
+set(JDUTIL_COVERAGEHELPERS 1)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	set(coverage_dir ${CMAKE_BINARY_DIR}/coverage)
@@ -11,7 +11,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	find_program(LCOV_EXECUTABLE lcov)
 	find_program(GENHTML_EXECUTABLE genhtml)
 	configure_file(${CMAKE_CURRENT_LIST_DIR}/data/llvm-gcov-wrapper.sh.in ${coverage_dir}/llvm-gcov-wrapper.sh)
-
 
 	add_custom_target(coverage_reset
 		COMMAND ${LCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --gcov-tool ${coverage_dir}/llvm-gcov-wrapper.sh --zerocounters

@@ -3,6 +3,7 @@ if(NOT TARGET nonius_dl)
 	ExternalProject_Add(nonius_dl
 		PREFIX ${CMAKE_BINARY_DIR}/nonius
 		GIT_REPOSITORY https://github.com/rmartinho/nonius.git
+		GIT_TAG stable
 		TIMEOUT 10
 		UPDATE_COMMAND ${GIT_EXECUTABLE} pull origin v1.1.2
 		CONFIGURE_COMMAND ""

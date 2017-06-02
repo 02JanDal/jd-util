@@ -1,7 +1,7 @@
 if(JDUTIL_CPPCHECK)
 	return()
 endif()
-set(JDUTIL_CPPCHECK 1 PARENT_SCOPE)
+set(JDUTIL_CPPCHECK 1)
 
 find_program(CPPCHECK_EXECUTABLE cppcheck)
 mark_as_advanced(CPPCHECK_EXECUTABLE)
@@ -21,7 +21,7 @@ if(CPPCHECK_EXECUTABLE)
 			endforeach()
 			separate_arguments(opts UNIX_COMMAND "${opts}")
 			add_custom_target(cppcheck_${target}
-				COMMAND ${CPPCHECK_EXECUTABLE} ${opts} ${srcs}
+				COMMAND ${CPPCHECK_EXECUTABLE} ${opts} --language=c++ ${srcs}
 				COMMENT "Checking files of ${target}" VERBATIM
 			)
 		else()

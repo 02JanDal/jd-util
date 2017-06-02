@@ -1,7 +1,7 @@
 if(JDUTIL_TESTHELPERS)
 	return()
 endif()
-set(JDUTIL_TESTHELPERS 1 PARENT_SCOPE)
+set(JDUTIL_TESTHELPERS 1)
 
 include(CoverageHelpers)
 
