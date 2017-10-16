@@ -13,7 +13,7 @@ if(NOT CMAKE_SOURCE_DIR STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 	set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} PARENT_SCOPE)
 endif()
 
-find_package(Qt5 REQUIRED COMPONENTS Core)
+find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Sql)
 find_package(Git REQUIRED)
 find_package(Catch REQUIRED)
 find_package(Nonius REQUIRED)
@@ -84,6 +84,9 @@ clean_qt(jd-util)
 set(GUI_SRC
 	UndoUtil.h
 	UndoUtil.cpp
+
+	MainWindow.h
+	MainWindow.cpp
 )
 prepend_to_list(GUI_SRC src/jd-util-gui/)
 add_library(jd-util-gui ${GUI_SRC})
@@ -95,7 +98,23 @@ target_include_directories(jd-util-gui PUBLIC
 set_target_properties(jd-util-gui PROPERTIES OUTPUT_NAME jd_util_gui)
 clean_qt(jd-util-gui)
 
-install(TARGETS jd-util jd-util-gui EXPORT jd-util DESTINATION lib)
+set(SQL_SRC
+	DatabaseUtil.h
+	DatabaseUtil.cpp
+	QueryBuilder.h
+	QueryBuilder.cpp
+)
+prepend_to_list(SQL_SRC src/jd-util-sql/)
+add_library(jd-util-sql ${SQL_SRC})
+target_link_libraries(jd-util-sql Qt5::Core Qt5::Sql jd-util)
+target_include_directories(jd-util-sql PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+	$<INSTALL_INTERFACE:include>
+)
+set_target_properties(jd-util-sql PROPERTIES OUTPUT_NAME jd_util_sql)
+clean_qt(jd-util-sql)
+
+install(TARGETS jd-util jd-util-gui jd-util-sql EXPORT jd-util DESTINATION lib)
 install(DIRECTORY src/ DESTINATION include FILES_MATCHING PATTERN "*.h")
 install(EXPORT jd-util NAMESPACE jd_ DESTINATION lib/cmake)
 install(DIRECTORY cmake/ DESTINATION lib/cmake/jd-util)
@@ -106,6 +125,8 @@ cppcheck_target(jd-util)
 clang_tidy_target(jd-util)
 cppcheck_target(jd-util-gui)
 clang_tidy_target(jd-util-gui)
+cppcheck_target(jd-util-sql)
+clang_tidy_target(jd-util-sql)
 
 enable_testing()
 add_subdirectory(test)
