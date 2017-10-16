@@ -3,8 +3,28 @@ if(JDUTIL_COVERAGEHELPERS OR TARGET coverage_reset)
 endif()
 set(JDUTIL_COVERAGEHELPERS 1)
 
+set(coverage_dir ${CMAKE_BINARY_DIR}/coverage)
+
+### Detect Browser
+
+if(APPLE OR MSVC)
+	set(JDUTIL_WEB_BROWSER "open")
+else()
+	if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+		if(LINUX_DISTRO MATCHES "Debian")
+			set(default_web_browser "sensible-browser")
+		else()
+			set(default_web_browser "xdg-open")
+		endif()
+	else()
+		set(default_web_browser "firefox")
+	endif()
+	set(JDUTIL_WEB_BROWSER ${default_web_browser} CACHE STRING "Command to open web browser")
+endif()
+
+### Coverage
+
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-	set(coverage_dir ${CMAKE_BINARY_DIR}/coverage)
 	set(base_opts "--directory ${CMAKE_BINARY_DIR} --gcov-tool ${coverage_dir}/llvm-gcov-wrapper.sh")
 
 	find_program(LLVM_COV_EXECUTABLE llvm-cov)
@@ -64,9 +84,64 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	endfunction()
 
 	mark_as_advanced(LLVM_COV_EXECUTABLE LCOV_EXECUTABLE GENHTML_EXECUTABLE)
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+	function(add_coverage_flags)
+		foreach(target ${ARGN})
+			target_compile_options(${target} PUBLIC -fprofile-instr-generate -fcoverage-mapping)
+			set_target_properties(${target} PROPERTIES LINK_FLAGS "-fprofile-instr-generate -fcoverage-mapping")
+		endforeach()
+	endfunction()
+	function(add_coverage_capture_target target)
+		add_coverage_flags(${target})
+
+		set(profraw ${coverage_dir}/${target}.profraw)
+		set(profdata ${coverage_dir}/${target}.profdata)
+		add_custom_command(OUTPUT ${profdata}
+			COMMAND ${CMAKE_COMMAND} -E env LLVM_PROFILE_FILE=${profraw} $<TARGET_FILE:${target}>
+			COMMAND xcrun llvm-profdata merge ${profraw} -o ${profdata}
+			VERBATIM
+			BYPRODUCTS ${profraw}
+			DEPENDS ${target}
+		)
+		add_custom_command(TARGET ${target} POST_BUILD
+			COMMAND ${CMAKE_COMMAND} -E remove ${profdata} ${profraw}
+		)
+		add_custom_target(coverage_capture_${target}
+			DEPENDS ${profdata} ${target}
+		)
+	endfunction()
+	function(add_coverage_capture name)
+		set(output "${coverage_dir}/${name}.profdata")
+		set(opts)
+		set(depends)
+		set(binaries)
+		foreach(target ${ARGN})
+			set(opts "${opts} -weighted-input=1,${coverage_dir}/${target}.profdata")
+			set(depends "${depends} ${coverage_dir}/${target}.profdata coverage_capture_${target}")
+			list(APPEND binaries $<TARGET_FILE:${target}>)
+		endforeach()
+		separate_arguments(opts UNIX_COMMAND "${opts}")
+		separate_arguments(depends UNIX_COMMAND "${depends}")
+		add_custom_command(OUTPUT ${output}
+			COMMAND xcrun llvm-profdata merge -output=${output} ${opts}
+			VERBATIM
+			DEPENDS ${depends}
+		)
+		add_custom_target(coverage_${name}_html
+			DEPENDS ${output}
+			COMMAND xcrun llvm-cov show ${binaries} -instr-profile=${coverage_dir}/${name}.profdata -format=html -output-dir=${coverage_dir}/html
+			VERBATIM
+			COMMENT "Generating HTML for ${name} coverage..."
+		)
+		add_custom_target(coverage_${name}_open
+			DEPENDS coverage_${name}_html
+			COMMAND ${JDUTIL_WEB_BROWSER} ${coverage_dir}/html/index.html
+			VERBATIM
+		)
+	endfunction()
 else()
 	function(add_coverage_capture_target)
 	endfunction()
-	function(add_coverage_capture)
+	function(add_coverage_capture name)
 	endfunction()
 endif()
