@@ -101,7 +101,7 @@ public:
 	inline NewCont to() const
 	{
 		NewCont out;
-		out.reserve(m_collection.size());
+		out.resize(m_collection.size());
 		std::copy(std::begin(m_collection), std::end(m_collection), std::begin(out));
 		return out;
 	}

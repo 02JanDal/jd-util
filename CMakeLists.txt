@@ -75,9 +75,10 @@ prepend_to_list(SRC src/jd-util/)
 add_library(jd-util ${SRC})
 target_link_libraries(jd-util Qt5::Core)
 target_include_directories(jd-util PUBLIC
-	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-	$<INSTALL_INTERFACE:include>
+	-isystem $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+	-isystem $<INSTALL_INTERFACE:include>
 )
+set_target_properties(jd-util PROPERTIES OUTPUT_NAME jd_util)
 clean_qt(jd-util)
 
 set(GUI_SRC
@@ -91,6 +92,8 @@ target_include_directories(jd-util-gui PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>
 )
+set_target_properties(jd-util-gui PROPERTIES OUTPUT_NAME jd_util_gui)
+clean_qt(jd-util-gui)
 
 install(TARGETS jd-util jd-util-gui EXPORT jd-util DESTINATION lib)
 install(DIRECTORY src/ DESTINATION include FILES_MATCHING PATTERN "*.h")

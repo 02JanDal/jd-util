@@ -40,15 +40,24 @@ QT_WARNING_DISABLE_CLANG("-Wvla-extension")
 
 	char **symbols = ::backtrace_symbols(addressList, addressLength);
 
-	std::size_t functionNameSize = 256;
-	char *functionName = new char[functionNameSize];
-
 	QVector<QString> out;
 	for (int i = 1; i < addressLength; ++i) {
-		char *beginName = 0,
-				*beginOffset = 0,
-				*endOffset = 0;
-		for (char *p = symbols[i]; *p; ++p) {
+		const QString symbol = QString::fromLocal8Bit(symbols[i]);
+#if defined(Q_OS_OSX)
+		const QVector<QStringRef> parts = symbol.splitRef(QLatin1Char(' '), QString::SkipEmptyParts);
+		int status;
+		char *demangled = abi::__cxa_demangle(parts.at(3).toLocal8Bit().constData(), 0, 0, &status);
+		if (status == 0) {
+			out.append(QString::fromLocal8Bit(demangled) + QStringLiteral(" + ") + parts.at(5).toString());
+			free(demangled);
+		} else {
+			out.append(parts.at(3).toString() + QStringLiteral(" + ") + parts.at(5).toString());
+		}
+#else
+		const int beginName = symbol.indexOf(QLatin1Char('(')),
+				beginOffset = symbol.indexOf(QLatin1Char('+')),
+				endOffset = symbol.indexOf(QLatin1Char(')'));
+		/*for (char *p = symbols[i]; *p; ++p) {
 			if (*p == '(') {
 				beginName = p;
 			} else if (*p == '+') {
@@ -57,24 +66,27 @@ QT_WARNING_DISABLE_CLANG("-Wvla-extension")
 				endOffset = p;
 				break;
 			}
-		}
+		}*/
 
-		if (beginName && beginOffset && endOffset && beginName < beginOffset) {
-			*beginName++ = '\0';
-			*beginOffset++ = '\0';
-			*endOffset++ = '\0';
+		if (beginName != -1 && beginOffset != -1 && endOffset != -1 && beginName < beginOffset) {
+		//if (beginName && beginOffset && endOffset && beginName < beginOffset) {
+			//*beginName++ = '\0';
+			//*beginOffset++ = '\0';
+			//*endOffset++ = '\0';
 
-			int status;
-			char *demangled = abi::__cxa_demangle(beginName, functionName, &functionNameSize, &status);
+			/*int status;
+			char *demangled = abi::__cxa_demangle(beginName, 0, 0, &status);
 
 			if (status == 0) {
 				out.append(QString::fromLocal8Bit(demangled) + QLatin1Char('+') + QString::fromLocal8Bit(beginOffset));
 			} else {
 				out.append(QString::fromLocal8Bit(beginName) + QStringLiteral("()+") + QString::fromLocal8Bit(beginOffset));
 			}
+			free(demangled);*/
 		} else {
 			out.append(QString::fromLocal8Bit(symbols[i]));
 		}
+#endif
 	}
 
 	free(symbols);
