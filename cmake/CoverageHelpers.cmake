@@ -24,13 +24,20 @@ endif()
 
 ### Coverage
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 	set(base_opts "--directory ${CMAKE_BINARY_DIR} --gcov-tool ${coverage_dir}/llvm-gcov-wrapper.sh")
 
 	find_program(LLVM_COV_EXECUTABLE llvm-cov)
 	find_program(LCOV_EXECUTABLE lcov)
 	find_program(GENHTML_EXECUTABLE genhtml)
 	configure_file(${CMAKE_CURRENT_LIST_DIR}/data/llvm-gcov-wrapper.sh.in ${coverage_dir}/llvm-gcov-wrapper.sh)
+
+	function(add_coverage_flags)
+		foreach(target ${ARGN})
+			target_compile_options(${target} PUBLIC --coverage)
+			set_target_properties(${target} PROPERTIES LINK_FLAGS "--coverage")
+		endforeach()
+	endfunction()
 
 	add_custom_target(coverage_reset
 		COMMAND ${LCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --gcov-tool ${coverage_dir}/llvm-gcov-wrapper.sh --zerocounters
@@ -44,16 +51,16 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 		COMMENT "Generating base profile for coverage"
 	)
 
-	function(add_coverage_capture_target test command)
+	function(add_coverage_capture_target target)
 		set(coverage_dir ${CMAKE_BINARY_DIR}/coverage)
-		add_custom_target(coverage_capture_${test}
+		add_custom_target(coverage_capture_${target}
 			DEPENDS coverage_base
 			COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target coverage_reset
-			COMMAND ${command}
-			COMMAND ${LCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --gcov-tool ${coverage_dir}/llvm-gcov-wrapper.sh --capture --base-directory ${CMAKE_BINARY_DIR} --test-name ${test} -o ${coverage_dir}/${test}.info
-			COMMAND ${LCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --gcov-tool ${coverage_dir}/llvm-gcov-wrapper.sh -a ${coverage_dir}/base.info -a ${coverage_dir}/${test}.info -o ${coverage_dir}/combined_test_${test}.info
+			COMMAND ${target}
+			COMMAND ${LCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --gcov-tool ${coverage_dir}/llvm-gcov-wrapper.sh --capture --base-directory ${CMAKE_BINARY_DIR} --test-name ${target} -o ${coverage_dir}/${target}.info
+			COMMAND ${LCOV_EXECUTABLE} --directory ${CMAKE_BINARY_DIR} --gcov-tool ${coverage_dir}/llvm-gcov-wrapper.sh -a ${coverage_dir}/base.info -a ${coverage_dir}/${target}.info -o ${coverage_dir}/combined_test_${target}.info
 			VERBATIM
-			COMMENT "Generating coverage for ${test}"
+			COMMENT "Generating coverage for ${target}"
 		)
 	endfunction()
 
@@ -84,7 +91,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	endfunction()
 
 	mark_as_advanced(LLVM_COV_EXECUTABLE LCOV_EXECUTABLE GENHTML_EXECUTABLE)
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	function(add_coverage_flags)
 		foreach(target ${ARGN})
 			target_compile_options(${target} PUBLIC -fprofile-instr-generate -fcoverage-mapping)
@@ -142,6 +149,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
 else()
 	function(add_coverage_capture_target)
 	endfunction()
-	function(add_coverage_capture name)
+	function(add_coverage_capture)
 	endfunction()
+	function(add_coverage_flags)
 endif()

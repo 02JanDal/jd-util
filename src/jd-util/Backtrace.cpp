@@ -17,6 +17,7 @@
 
 #include <QVector>
 #include <QRegularExpression>
+#include <QDebug>
 #include <iostream>
 
 #if defined(Q_OS_UNIX)
@@ -75,15 +76,16 @@ QT_WARNING_DISABLE_CLANG("-Wvla-extension")
 			//*beginOffset++ = '\0';
 			//*endOffset++ = '\0';
 
-			/*int status;
-			char *demangled = abi::__cxa_demangle(beginName, 0, 0, &status);
+			int status;
+//			char *demangled = abi::__cxa_demangle(beginName, 0, 0, &status);
+			char *demangled = abi::__cxa_demangle(symbol.mid(beginName+1, beginOffset - beginName - 1).toLocal8Bit().constData(), 0, 0, &status);
 
 			if (status == 0) {
-				out.append(QString::fromLocal8Bit(demangled) + QLatin1Char('+') + QString::fromLocal8Bit(beginOffset));
+				out.append(QString::fromLocal8Bit(demangled) + QLatin1Char('+') + symbol.mid(beginOffset+1, endOffset - beginOffset-1));
 			} else {
-				out.append(QString::fromLocal8Bit(beginName) + QStringLiteral("()+") + QString::fromLocal8Bit(beginOffset));
+				out.append(symbol.mid(beginName+1, endOffset - beginName-1));
 			}
-			free(demangled);*/
+			free(demangled);
 		} else {
 			out.append(QString::fromLocal8Bit(symbols[i]));
 		}

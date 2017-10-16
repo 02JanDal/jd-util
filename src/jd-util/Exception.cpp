@@ -15,7 +15,7 @@
 
 #include "Exception.h"
 
-#include <QDebug>
+#include <iostream>
 
 #include "Backtrace.h"
 
@@ -23,7 +23,7 @@ Exception::Exception(const QString &message)
 	: std::exception(), m_message(message)
 {
 #ifdef DEBUG_BUILD
-	qDebug() << "Exception" << m_message << "in:";
+	std::cerr << "Exception " << qPrintable(m_message) << " in:\n";
 	JD::Util::dumpBacktrace(1, 5, true);
 #endif
 }
