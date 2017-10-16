@@ -58,6 +58,9 @@ QString bg(const Color color, const QString &in = QString());
 QString reset();
 bool isTty();
 
+bool askBoolean(const QString &question, const bool default_ = false);
+QString askString(const QString &question, const QString &default_ = QString());
+
 int currentWidth();
 
 QString readPassword();

@@ -22,6 +22,9 @@
 
 #include "FileSystem.h"
 
+namespace JD {
+namespace Util {
+
 void Json::write(const QJsonDocument &doc, const QString &filename)
 {
 	FS::write(filename, doc.toJson());
@@ -279,4 +282,6 @@ template<> QJsonValue ensureIsType<QJsonValue>(const QJsonValue &value, const Re
 	return value;
 }
 
+}
+}
 }

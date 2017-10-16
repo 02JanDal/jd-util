@@ -29,6 +29,8 @@
 #include "Exception.h"
 #include "Functional.h"
 
+namespace JD {
+namespace Util {
 namespace Json {
 DECLARE_EXCEPTION(Json);
 
@@ -60,15 +62,17 @@ template <typename T> class LikePointer : public std::false_type {};
 template <typename T> class LikePointer<T *> : public std::true_type {};
 template <typename T> class LikePointer<std::shared_ptr<T>> : public std::true_type {};
 
-template <typename T> QJsonValue toJsonHelper(const T &t, std::true_type, std::false_type) { return t->toJson(); }
-template <typename T> QJsonValue toJsonHelper(const T &t, std::true_type, std::true_type) { return t->toJson(); }
-template <typename T> QJsonValue toJsonHelper(const T &t, std::false_type, std::false_type) { return QJsonValue(t); }
-template <typename T> QJsonValue toJsonHelper(const T &t, std::false_type, std::true_type) { return t.toJson(); }
+template <typename T> QJsonValue toJsonHelper(const T &t, std::false_type, std::true_type, std::false_type) { return t->toJson(); }
+template <typename T> QJsonValue toJsonHelper(const T &t, std::false_type, std::true_type, std::true_type) { return t->toJson(); }
+template <typename T> QJsonValue toJsonHelper(const T &t, std::false_type, std::false_type, std::false_type) { return QJsonValue(t); }
+template <typename T> QJsonValue toJsonHelper(const T &t, std::false_type, std::false_type, std::true_type) { return t.toJson(); }
+template <typename T, typename A, typename B> QJsonValue toJsonHelper(const T &t, std::true_type, A, B) { return QJsonValue(static_cast<int>(t)); }
 }
 
 template <typename T> QJsonValue toJson(const T &t)
 {
 	return detail::toJsonHelper(t,
+								std::is_integral<T>(),
 								typename detail::LikePointer<T>::type(),
 								Private::HasMemberFunction_toJson<T>());
 }
@@ -121,25 +125,42 @@ template <> QUrl ensureIsType<QUrl>(const QJsonValue &value, const Requirement, 
 
 namespace detail {
 template <typename T>
-T fromJsonHelper(const QJsonValue &value, const QString &what, std::true_type)
+T fromJsonHelper(const QJsonValue &value, const QString &what, std::false_type, std::true_type)
 {
 	T val;
 	val.fromJson(ensureIsType<QJsonArray>(value, Required, what));
 	return val;
 }
 template <typename T>
-T fromJsonHelper(const QJsonValue &value, const QString &what, std::false_type)
+T fromJsonHelper(const QJsonValue &value, const QString &what, std::false_type, std::false_type)
 {
 	T val;
 	val.fromJson(ensureIsType<QJsonObject>(value, Required, what));
 	return val;
 }
+template <typename T>
+T fromJsonHelper(const QJsonValue &value, const QString &what, std::true_type, std::false_type)
+{
+	Q_UNUSED(what)
+	return static_cast<T>(value.toInt());
+}
+
+template <typename T>
+struct FromJson
+{
+	static auto convert(const QJsonValue &value, const QString &what)
+	{
+		return fromJsonHelper<T>(value, what,
+								 std::is_integral<T>(),
+								 Private::HasMemberFunction_fromJson<T, QJsonArray>());
+	}
+};
 }
 
 template <typename T>
 T ensureIsType(const QJsonValue &value, const Requirement, const QString &what)
 {
-	return detail::fromJsonHelper<T>(value, what, Private::HasMemberFunction_fromJson<T, QJsonArray>());
+	return detail::FromJson<T>::convert(value, what);
 }
 
 // the following functions are higher level functions, that make use of the above functions for
@@ -293,4 +314,17 @@ JSON_HELPERFUNCTIONS(Variant, QVariant)
 
 #undef JSON_HELPERFUNCTIONS
 
+namespace detail {
+template <typename T>
+struct FromJson<QVector<T>>
+{
+	static auto convert(const QJsonValue &value, const QString &what)
+	{
+		return ensureIsArrayOf<T>(value, Required, what);
+	}
+};
+}
+
+}
+}
 }

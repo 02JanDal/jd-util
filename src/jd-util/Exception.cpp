@@ -24,7 +24,7 @@ Exception::Exception(const QString &message)
 {
 #ifdef DEBUG_BUILD
 	qDebug() << "Exception" << m_message << "in:";
-	JD::Util::dumpBacktrace(1, 5);
+	JD::Util::dumpBacktrace(1, 5, true);
 #endif
 }
 

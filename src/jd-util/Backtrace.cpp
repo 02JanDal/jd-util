@@ -16,6 +16,7 @@
 #include "Backtrace.h"
 
 #include <QVector>
+#include <QRegularExpression>
 #include <iostream>
 
 #if defined(Q_OS_UNIX)
@@ -98,11 +99,26 @@ QT_WARNING_POP
 #endif
 }
 
-void dumpBacktrace(const int offset, const int maxFrames)
+void dumpBacktrace(const int offset, const int maxFrames, const bool excludeExceptionConstructor)
 {
-	const QVector<QString> frames = backtrace(maxFrames + 1 + offset).mid(1 + offset);
-	for (const QString &frame : frames) {
-		std::cerr << '\t' << frame.toLocal8Bit().constData() << '\n';
+	if (excludeExceptionConstructor) {
+		static const QRegularExpression exp(QStringLiteral("([A-Z][A-Za-z]*[Ee]xception)::(\\1)\\("));
+
+		const QVector<QString> frames = backtrace(maxFrames + 1 + offset + 10);
+		QVector<QString> filtered;
+		for (const QString &str : frames) {
+			if (!str.contains(exp)) {
+				filtered.append(str);
+			}
+		}
+		for (const QString &frame : filtered.mid(1 + offset, maxFrames)) {
+			std::cerr << '\t' << frame.toLocal8Bit().constData() << '\n';
+		}
+	} else {
+		const QVector<QString> frames = backtrace(maxFrames + 1 + offset).mid(1 + offset);
+		for (const QString &frame : frames) {
+			std::cerr << '\t' << frame.toLocal8Bit().constData() << '\n';
+		}
 	}
 }
 

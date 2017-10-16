@@ -369,6 +369,30 @@ QString readPassword()
 	return QString::fromStdString(str);
 }
 
+bool askBoolean(const QString &question, const bool default_)
+{
+	while (true) {
+		std::cout << question << (default_ ? " [Y/n]: " : " [y/N]: ");
+		std::string answer;
+		std::cin >> answer;
+		if (answer.size() == 0 || answer.at(0) == '\n') {
+			return default_;
+		} else if (std::tolower(answer.at(0)) == 'y') {
+			return true;
+		} else if (std::tolower(answer.at(1)) == 'n') {
+			return false;
+		}
+	}
+}
+
+QString askString(const QString &question, const QString &default_)
+{
+	std::cout << question << " [" << default_ << "]: ";
+	std::string answer;
+	std::cin >> answer;
+	return answer.empty() ? default_ : QString::fromStdString(answer);
+}
+
 }
 }
 }

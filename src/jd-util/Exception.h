@@ -33,18 +33,20 @@ private:
 	QString m_message;
 };
 
-#define DECLARE_EXCEPTION_X(name, message)        \
+#define DECLARE_EXCEPTION_X(name, message, superclass) \
 	QT_WARNING_PUSH                             \
 	QT_WARNING_DISABLE_GCC("-Wweak-vtables")    \
-	class name##Exception : public ::Exception  \
+	QT_WARNING_DISABLE_CLANG("-Wweak-vtables")  \
+	class name##Exception : public superclass   \
 	{                                           \
 	public:                                     \
 		explicit name##Exception()              \
-			: Exception(message) {}             \
-		using ::Exception::Exception;           \
+			: superclass(message) {}            \
+		explicit name##Exception(const QString &msg) \
+			: superclass(msg) {}                \
 	};                                          \
 	QT_WARNING_POP
-#define DECLARE_EXCEPTION(name) DECLARE_EXCEPTION_X(name, QString())
+#define DECLARE_EXCEPTION(name) DECLARE_EXCEPTION_X(name, QString(), ::Exception)
 
-DECLARE_EXCEPTION_X(NotImplemented, QStringLiteral("This feature is not yet implemented"))
-DECLARE_EXCEPTION_X(NotReachable, QStringLiteral("This should not be reachable"))
+DECLARE_EXCEPTION_X(NotImplemented, QStringLiteral("This feature is not yet implemented"), ::Exception)
+DECLARE_EXCEPTION_X(NotReachable, QStringLiteral("This should not be reachable"), ::Exception)
