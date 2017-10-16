@@ -1,6 +1,5 @@
 #include "jd-util/Inflector.h"
 
-#define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 
 using namespace JD::Util;
