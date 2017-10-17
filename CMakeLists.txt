@@ -74,9 +74,9 @@ prepend_to_list(SRC src/jd-util/)
 
 add_library(jd-util ${SRC})
 target_link_libraries(jd-util Qt5::Core)
-target_include_directories(jd-util PUBLIC
-	-isystem $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
-	-isystem $<INSTALL_INTERFACE:include>
+target_include_directories(jd-util SYSTEM PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+	$<INSTALL_INTERFACE:include>
 )
 set_target_properties(jd-util PROPERTIES OUTPUT_NAME jd_util)
 clean_qt(jd-util)
@@ -91,7 +91,7 @@ set(GUI_SRC
 prepend_to_list(GUI_SRC src/jd-util-gui/)
 add_library(jd-util-gui ${GUI_SRC})
 target_link_libraries(jd-util-gui Qt5::Core Qt5::Gui Qt5::Widgets jd-util)
-target_include_directories(jd-util-gui PUBLIC
+target_include_directories(jd-util-gui SYSTEM PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>
 )
@@ -107,7 +107,7 @@ set(SQL_SRC
 prepend_to_list(SQL_SRC src/jd-util-sql/)
 add_library(jd-util-sql ${SQL_SRC})
 target_link_libraries(jd-util-sql Qt5::Core Qt5::Sql jd-util)
-target_include_directories(jd-util-sql PUBLIC
+target_include_directories(jd-util-sql SYSTEM PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>
 )

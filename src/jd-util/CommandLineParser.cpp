@@ -45,17 +45,17 @@ private:
 #define DEC_EXCEPTION(name) \
 	QT_WARNING_PUSH \
 	QT_WARNING_DISABLE_GCC("-Wweak-vtables") \
-	class name##Exception : public CommandLineException { public: using CommandLineException::CommandLineException; } \
+	class name##Exception : public CommandLineException { public: using CommandLineException::CommandLineException; }; \
 	QT_WARNING_POP
-DEC_EXCEPTION(ToManyPositionals);
-DEC_EXCEPTION(UnknownOption);
-DEC_EXCEPTION(UnexpectedArgument);
-DEC_EXCEPTION(MissingRequiredArgument);
-DEC_EXCEPTION(MalformedOption);
-DEC_EXCEPTION(MissingPositionalArgument);
-DEC_EXCEPTION(InvalidOptionValue);
-DEC_EXCEPTION(RepeatedOption);
-DEC_EXCEPTION(Build);
+DEC_EXCEPTION(ToManyPositionals)
+DEC_EXCEPTION(UnknownOption)
+DEC_EXCEPTION(UnexpectedArgument)
+DEC_EXCEPTION(MissingRequiredArgument)
+DEC_EXCEPTION(MalformedOption)
+DEC_EXCEPTION(MissingPositionalArgument)
+DEC_EXCEPTION(InvalidOptionValue)
+DEC_EXCEPTION(RepeatedOption)
+DEC_EXCEPTION(Build)
 
 int Parser::process(int argc, char **argv)
 {
@@ -115,7 +115,7 @@ Parser &Parser::addHelpCommand()
 }
 Parser &Parser::addHelpOption()
 {
-	add(Option({QStringLiteral("help"), QStringLiteral("h")})
+	add(Option(QStringList{QStringLiteral("help"), QStringLiteral("h")})
 		.setDescription(QStringLiteral("Show help for the given command"))
 		.setEarlyExit(true)
 		.then([this](const Result &r) { printHelp(r.commandChain()); }));
